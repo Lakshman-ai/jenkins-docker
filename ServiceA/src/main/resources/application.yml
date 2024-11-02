@@ -1,0 +1,49 @@
+spring:
+  application:
+    name: ServiceA
+   
+server:
+  port: 8281   
+
+management:
+  health:
+    circuitbreakers:
+      enabled:  true
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: always
+      
+resilience4j:
+  circuitbreaker:
+    instances:      
+      serviceA:
+        registerHealthIndicator: true
+        eventConsumerBufferSize: 10
+        failureRateThreshold: 50
+        minimumNumberOfCalls: 5
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+        waitDurationInOpenState: 5s
+        permittedNumberOfCallsInHalfOpenState: 3
+        slidingWindowSize: 10
+        slidingWindowType: COUNT_BASED
+                      
+  retry:
+    instances:
+      serviceA:
+         
+         max-attempts:  5
+         wait-duration: 10s
+
+
+  ratelimiter:
+    instances:
+      serviceA:
+        limit-for-period: 10
+        limit-refresh-period: 10s
+        timeout-duration: 3s
+        register-health-indicator: true
+   
